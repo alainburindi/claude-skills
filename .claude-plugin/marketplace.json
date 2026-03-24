@@ -1,0 +1,30 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "claude-skills",
+  "owner": {
+    "name": "alainburindi",
+    "email": "alainburindi62@gmail.com"
+  },
+  "metadata": {
+    "description": "A collection of Claude Code slash commands for developers",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "claude-skills",
+      "source": ".",
+      "description": "Slash commands for complex developer tasks — starting with Mac migration without Migration Assistant",
+      "version": "1.0.0",
+      "author": {
+        "name": "alainburindi",
+        "email": "alainburindi62@gmail.com"
+      },
+      "homepage": "https://github.com/alainburindi/claude-skills",
+      "repository": "https://github.com/alainburindi/claude-skills",
+      "license": "MIT",
+      "keywords": ["mac", "migration", "developer", "setup", "dotfiles"],
+      "category": "productivity",
+      "tags": ["mac", "migration", "developer-tools", "setup"]
+    }
+  ]
+}

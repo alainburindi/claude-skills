@@ -8,8 +8,14 @@ Claude Skills are slash commands that give Claude Code specialized, step-by-step
 
 ## Installation
 
-```bash
-/plugin install claude-skills@alainburindi
+**Step 1** — Add this repo as a marketplace (one-time):
+```
+/plugin marketplace add alainburindi/claude-skills
+```
+
+**Step 2** — Install the plugin:
+```
+/plugin install claude-skills@claude-skills
 ```
 
 That's it. All skills in this repo become available immediately.
