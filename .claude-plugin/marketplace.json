@@ -12,7 +12,10 @@
   "plugins": [
     {
       "name": "alb",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "alainburindi/claude-skills"
+      },
       "description": "Slash commands for complex developer tasks — starting with Mac migration without Migration Assistant",
       "version": "1.0.0",
       "author": {
