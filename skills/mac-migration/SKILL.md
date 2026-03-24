@@ -70,7 +70,9 @@ Store these answers and reference them throughout all phases.
 Read `references/audit-commands.md` for the complete command set.
 
 ### Steps:
-1. Ask the user to run the audit commands on the old Mac and paste the output, OR offer to run them via SSH if access is already set up.
+1. Check if this is the old Mac by comparing `whoami` output to the old Mac username provided at setup.
+   - If **on the old Mac**: run the audit commands directly using the Bash tool. Read `references/audit-commands.md` for the full command set and run each category.
+   - If **on the new Mac**: offer to run them via SSH if access is set up, otherwise ask the user to run them and paste the output.
 2. Parse the output and produce a structured summary table:
    - Languages & runtimes detected (with versions)
    - Package managers and their global packages
