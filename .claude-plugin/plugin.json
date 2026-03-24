@@ -1,0 +1,9 @@
+{
+  "name": "claude-skills",
+  "description": "A collection of team skills for Claude Code",
+  "author": {
+    "name": "alainburindi",
+    "email": "alainburindi62@gmail.com"
+  },
+  "version": "1.0.0"
+}
