@@ -179,7 +179,39 @@ rsync -avh --progress \
 
 If old and new usernames differ, warn: "Your dotfiles and configs contain hardcoded paths with your old username. We'll fix these in Phase 7 and Phase 8."
 
-**5. Resumability**
+**5. Transfer gitignored credential files**
+
+Ask: "Do you want to transfer gitignored credential files (.env, .pem, credentials.json, etc.)? These are excluded from git but your projects likely need them."
+
+If yes, scan `.gitignore` files in PROJECT_DIRS to find what credential patterns exist, then show the user the actual files found and confirm before transferring:
+```bash
+# Find gitignored credential patterns
+find $PROJECT_DIRS -name ".gitignore" \
+  -not -path "*/node_modules/*" -not -path "*/.venv/*" \
+  -not -path "*/venv/*" -not -path "*/vendor/*" \
+  2>/dev/null | xargs grep -hE "^[^#]*\.(env|secret|key|pem|p12|pfx|credentials)(\.[a-z]+)?$|^[^#]*credentials\.json" \
+  2>/dev/null | sort -u
+
+# Find the actual files
+find $PROJECT_DIRS \
+  -not -path "*/node_modules/*" -not -path "*/.venv/*" -not -path "*/venv/*" \
+  -not -path "*/.git/*" -not -path "*/vendor/*" \
+  \( -name ".env" -o -name ".env.*" -o -name "credentials.json" -o -name "*.pem" -o -name "*.key" -o -name "*.secret" \) \
+  2>/dev/null | sort
+```
+Show the list to the user, confirm, then transfer:
+```bash
+rsync -avh --progress \
+  -e "ssh -o IdentitiesOnly=yes" \
+  --exclude=".git/" --exclude="node_modules/" --exclude=".venv/" --exclude="venv/" \
+  --include="*/" \
+  --include=".env" --include=".env.*" \
+  --include="credentials.json" --include="*.pem" --include="*.key" --include="*.secret" \
+  --exclude="*" \
+  PROJECT_DIR/ NEW_USER@NEW_MAC_IP:PROJECT_DIR/
+```
+
+**6. Resumability**
 
 Remind: "rsync is safe to re-run — it skips already transferred files. If interrupted, just run the same command again."
 
@@ -203,6 +235,42 @@ Read `references/database-migration.md` for engine-specific commands.
 - **Redis** — Copy `dump.rdb` file or use `redis-cli --rdb`
 - **SQLite** — Just copy the `.db` files directly
 - **Any other engine** — Ask the user for the dump/restore commands specific to their version
+
+### Database configuration migration
+
+Ask: "Do you want to copy database configuration settings (e.g. max_locks_per_transaction, max_connections) from your old Mac to the new one? This is recommended if you've tuned your databases."
+
+If yes, check each migrated engine for non-default settings:
+
+**PostgreSQL:**
+```bash
+# On old Mac — show non-default settings
+psql -d postgres -c "SELECT name, setting, unit FROM pg_settings WHERE source = 'configuration file' AND name IN ('max_locks_per_transaction', 'max_connections', 'shared_buffers', 'work_mem', 'maintenance_work_mem', 'wal_level');"
+```
+For each non-default value, update `/opt/homebrew/var/postgresql@<version>/postgresql.conf` on the new Mac and restart:
+```bash
+brew services restart postgresql@<version>
+```
+
+**MySQL:**
+```bash
+# On old Mac — show custom settings
+cat /opt/homebrew/etc/my.cnf 2>/dev/null || cat /etc/mysql/my.cnf 2>/dev/null
+```
+Copy any custom settings to the same file on the new Mac, then restart:
+```bash
+brew services restart mysql
+```
+
+**MongoDB:**
+```bash
+# On old Mac — show config
+cat /opt/homebrew/etc/mongod.conf 2>/dev/null
+```
+Copy any custom settings and restart:
+```bash
+brew services restart mongodb-community
+```
 
 ---
 
